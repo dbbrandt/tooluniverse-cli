@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from tooluniverse import ToolUniverse
-from ..utils import redirect_stdout_if_not_verbose, restore_stdout
+from ..utils import redirect_stdout_if_not_verbose, restore_stdout, format_json_output
 
 console = Console()
 
@@ -38,8 +38,8 @@ def get_tool_info(tool_name, format='text', verbose=False):
         sys.exit(1)
     
     if format == 'json':
-        # Print tool information as JSON without Rich formatting
-        print(json.dumps(tool, indent=2))
+        # Use the utility function to format and output JSON
+        format_json_output(tool)
     else:
         # Print tool information in a structured format
         console.print(Panel(f"[bold cyan]{tool['name']}[/bold cyan]", 

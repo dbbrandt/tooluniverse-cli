@@ -2,12 +2,19 @@
 Implementation of the 'search' command.
 """
 import json
-from rich.console import Console
 from rich.table import Table
 from tooluniverse import ToolUniverse
-from ..utils import determine_category, redirect_stdout_if_not_verbose, restore_stdout
+from ..utils import (
+    determine_category, 
+    redirect_stdout_if_not_verbose, 
+    restore_stdout, 
+    format_json_output,
+    format_tools_table,
+    print_tools_by_category,
+    console
+)
 
-console = Console()
+# No need to create a new console instance, using the shared one from utils
 
 
 def search_tools(search_string, format='table', full_desc=False, 
@@ -120,16 +127,13 @@ def search_tools(search_string, format='table', full_desc=False,
                 })
         
         # Create a complete JSON response with metadata
-        json_response = {
-            "metadata": {
-                "query": search_string,
-                "total_results": results_count
-            },
-            "tools": tools_json
+        metadata = {
+            "query": search_string,
+            "total_results": results_count
         }
         
-        # Print JSON output without Rich formatting
-        print(json.dumps(json_response, indent=2))
+        # Use the utility function to format and output JSON
+        format_json_output(tools_json, metadata)
     
     elif format == 'table':
         # Group search results by category
@@ -145,18 +149,8 @@ def search_tools(search_string, format='table', full_desc=False,
                 
             categories[tool_category].append((name, clean_desc))
         
-        # Print search results by category using rich tables
-        for category_name, tools in categories.items():
-            console.print(f"\n[bold]{category_name}[/bold] ([bold cyan]{len(tools)}[/bold cyan] tools)")
-            
-            table = Table(show_header=True, header_style="bold magenta")
-            table.add_column("Tool Name", style="dim", width=40)
-            table.add_column("Description")
-            
-            for name, desc in tools:
-                table.add_row(name, desc)
-                
-            console.print(table)
+        # Use the utility function to print tools in a consistent format
+        print_tools_by_category(categories)
     
     else:  # format == 'text'
         # Group search results by category

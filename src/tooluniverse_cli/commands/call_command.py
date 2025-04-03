@@ -7,7 +7,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.json import JSON
 from tooluniverse import ToolUniverse
-from ..utils import redirect_stdout_if_not_verbose, restore_stdout
+from ..utils import (
+    redirect_stdout_if_not_verbose, 
+    restore_stdout, 
+    format_json_output,
+    suppress_stdout_during_call
+)
 
 console = Console()
 
@@ -59,32 +64,25 @@ def call_tool(tool_name, arguments, format='text', verbose=False):
     
     try:
         if format == 'json':
-            # Redirect stdout during tool execution to suppress debug messages
-            import io
-            original_stdout = sys.stdout
-            temp_stdout = io.StringIO()
-            sys.stdout = temp_stdout
+            # Use the utility function to suppress debug output
+            result = suppress_stdout_during_call(
+                tooluni.run, 
+                query, 
+                return_message=False, 
+                verbose=False
+            )
             
-            # Call the tool with suppressed output
-            result = tooluni.run(query, return_message=False, verbose=False)
-            
-            # Restore original stdout
-            sys.stdout = original_stdout
-            
-            # Create structured JSON response with metadata
-            json_response = {
-                "metadata": {
-                    "tool": tool_name,
-                    "arguments": tool_args
-                },
-                "result": result
+            # Create metadata for consistent output
+            metadata = {
+                "tool": tool_name,
+                "arguments": tool_args
             }
             
-            # Print JSON output without Rich formatting
-            print(json.dumps(json_response, indent=2))
+            # Use the utility function to format and output JSON
+            format_json_output(result, metadata)
         else:
-            # Call the tool with return_message=False to avoid debug info in output
-            result = tooluni.run(query, return_message=False, verbose=verbose)
+            # For text format, call normally
+            result = tooluni.run(query, verbose=verbose)
             
             # Format and display the result
             console.print(Panel("[bold green]Result:[/bold green]", expand=False))

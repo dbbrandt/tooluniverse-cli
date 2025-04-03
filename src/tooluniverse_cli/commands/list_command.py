@@ -2,17 +2,23 @@
 Implementation of the 'list' command.
 """
 import json
-from rich.console import Console
+import sys
 from rich.table import Table
 from rich.text import Text
 from rich.panel import Panel
 from rich.style import Style
 from tooluniverse import ToolUniverse
-from ..utils import determine_category, redirect_stdout_if_not_verbose, restore_stdout
+from ..utils import (
+    determine_category, 
+    redirect_stdout_if_not_verbose, 
+    restore_stdout, 
+    format_json_output,
+    format_tools_table,
+    print_tools_by_category,
+    console
+)
 
-# Force color to be enabled
-console = Console(highlight=True, force_terminal=True)
-
+# No need to create a new console instance, using the shared one from utils
 
 def list_tools(format='table', full_desc=False, category=None, verbose=False):
     """List all available tools in ToolUniverse.
@@ -94,17 +100,11 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
                     "category": tool_category
                 })
         
-        # Create a complete JSON response with metadata
-        json_response = {
-            "metadata": {
-                "total_tools": tool_count
-            },
-            "tools": tools_json
+        # Use the utility function to format and output JSON
+        metadata = {
+            "total_tools": tool_count
         }
-        
-        # Print JSON output without Rich formatting
-        # Use regular print instead of console.print to avoid escape sequences
-        print(json.dumps(json_response, indent=2))
+        format_json_output(tools_json, metadata)
     
     elif format == 'table':
         # Group tools by category
@@ -114,29 +114,8 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
                 categories[tool_category] = []
             categories[tool_category].append((name, desc))
         
-        # Print tools by category using rich tables
-        for category_name, tools in categories.items():
-            console.print(f"\n[bold]{category_name}[/bold] ([bold cyan]{len(tools)}[/bold cyan] tools)")
-            
-            # Enhanced table with consistent row styles and horizontal separators
-            table = Table(
-                show_header=True,
-                header_style="bold magenta",
-                row_styles=[""],  # Use default styling (black text)
-                border_style="bright_black",
-                padding=(0, 1),
-                expand=True,
-                show_lines=True  # Add horizontal lines between rows
-            )
-            table.add_column("Tool Name", style="bold green", width=40, no_wrap=True)
-            table.add_column("Description")  # Remove the 'white' style to keep it default black
-            
-            for name, desc in tools:
-                # Make sure description wraps properly
-                wrapped_desc = desc.replace("\n", " ")
-                table.add_row(name, wrapped_desc)
-                
-            console.print(table)
+        # Use the utility function to print tools in a consistent format
+        print_tools_by_category(categories)
     
     else:  # format == 'text'
         # Group tools by category
