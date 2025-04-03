@@ -108,12 +108,23 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
         for category_name, tools in categories.items():
             console.print(f"\n[bold]{category_name}[/bold] ([bold cyan]{len(tools)}[/bold cyan] tools)")
             
-            table = Table(show_header=True, header_style="bold magenta")
-            table.add_column("Tool Name", style="dim", width=40)
-            table.add_column("Description")
+            # Enhanced table with consistent row styles and horizontal separators
+            table = Table(
+                show_header=True,
+                header_style="bold magenta",
+                row_styles=[""],  # Use default styling (black text)
+                border_style="bright_black",
+                padding=(0, 1),
+                expand=True,
+                show_lines=True  # Add horizontal lines between rows
+            )
+            table.add_column("Tool Name", style="bold green", width=40, no_wrap=True)
+            table.add_column("Description")  # Remove the 'white' style to keep it default black
             
             for name, desc in tools:
-                table.add_row(name, desc)
+                # Make sure description wraps properly
+                wrapped_desc = desc.replace("\n", " ")
+                table.add_row(name, wrapped_desc)
                 
             console.print(table)
     
