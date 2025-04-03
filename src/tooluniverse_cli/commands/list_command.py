@@ -4,10 +4,14 @@ Implementation of the 'list' command.
 import json
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
+from rich.panel import Panel
+from rich.style import Style
 from tooluniverse import ToolUniverse
 from ..utils import determine_category, redirect_stdout_if_not_verbose, restore_stdout
 
-console = Console()
+# Force color to be enabled
+console = Console(highlight=True, force_terminal=True)
 
 
 def list_tools(format='table', full_desc=False, category=None, verbose=False):
@@ -123,9 +127,10 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
         
         # Print tools by category
         for category_name, tools in categories.items():
-            console.print(f"\n[bold]{category_name}[/bold] ({len(tools)} tools):")
-            console.print("-" * 80)
+            console.print(f"\n[bold cyan]{category_name}[/bold cyan] ([bold]{len(tools)}[/bold] tools):")
+            console.print("[dim]" + "-" * 52 + "[/dim]")
+            console.print("[dim]" + "-" * 28 + "[/dim]")
             
             max_name_length = max(len(name) for name, _ in tools) if tools else 0
             for name, desc in tools:
-                console.print(f"{name.ljust(max_name_length + 2)}{desc}")
+                console.print(f"[bold green]{name}[/bold green]{' ' * (max_name_length - len(name) + 2)}{desc}")
