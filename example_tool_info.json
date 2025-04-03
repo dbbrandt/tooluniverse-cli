@@ -1,0 +1,24 @@
+{
+  "name": "get_safety_summary_by_drug_name",
+  "description": "Retrieve a summary of safety and effectiveness information based on the drug name.",
+  "parameter": {
+    "type": "object",
+    "properties": {
+      "drug_name": {
+        "type": "string",
+        "description": "The name of the drug (either brand name or generic name).",
+        "required": true
+      },
+      "limit": {
+        "type": "integer",
+        "description": "The number of records to return.",
+        "required": false
+      },
+      "skip": {
+        "type": "integer",
+        "description": "The number of records to skip.",
+        "required": false
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "tool": "get_drug_generic_name",
+    "arguments": {
+      "drug_name": "aspirin"
+    }
+  },
+  "result": {
+    "openfda.generic_name": "ASPIRIN",
+    "openfda.brand_name": "Low Dose Aspirin Enteric Safety-Coated"
+  }
+}
