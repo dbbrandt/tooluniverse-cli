@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tooluniverse-cli"
+version = "0.1.0"
+description = "Enhanced CLI for ToolUniverse biomedical data access"
+authors = [{name = "Daniel Brandt", email = "example@example.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+dependencies = [
+    "tooluniverse>=1.0.0",
+    "click>=8.0.0",
+    "rich>=12.0.0",  # For better terminal output formatting
+    "tabulate>=0.8.0"  # For table formatting
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Medical Science Apps."
+]
+
+[project.urls]
+"Homepage" = "https://github.com/yourusername/tooluniverse-cli"
+"Bug Tracker" = "https://github.com/yourusername/tooluniverse-cli/issues"
+
+[project.scripts]
+toolu = "tooluniverse_cli.cli:main"
