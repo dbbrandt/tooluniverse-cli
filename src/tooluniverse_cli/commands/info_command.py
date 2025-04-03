@@ -38,8 +38,8 @@ def get_tool_info(tool_name, format='text', verbose=False):
         sys.exit(1)
     
     if format == 'json':
-        # Print tool information as JSON
-        console.print(json.dumps(tool, indent=2))
+        # Print tool information as JSON without Rich formatting
+        print(json.dumps(tool, indent=2))
     else:
         # Print tool information in a structured format
         console.print(Panel(f"[bold cyan]{tool['name']}[/bold cyan]", 

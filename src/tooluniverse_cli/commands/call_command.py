@@ -45,25 +45,48 @@ def call_tool(tool_name, arguments, format='text', verbose=False):
     # Create query
     query = {"name": tool_name, "arguments": tool_args}
     
-    # Show what we're calling
-    console.print(f"[bold]Calling tool:[/bold] [cyan]{tool_name}[/cyan]")
-    if tool_args:
-        console.print("[bold]With arguments:[/bold]")
-        for key, value in tool_args.items():
-            console.print(f"  [dim]{key}:[/dim] {value}")
-    else:
-        console.print("[bold]No arguments provided[/bold]")
-    
-    console.print()  # Empty line for better readability
+    # Only show call information in non-JSON mode
+    if format != 'json':
+        console.print(f"[bold]Calling tool:[/bold] [cyan]{tool_name}[/cyan]")
+        if tool_args:
+            console.print("[bold]With arguments:[/bold]")
+            for key, value in tool_args.items():
+                console.print(f"  [dim]{key}:[/dim] {value}")
+        else:
+            console.print("[bold]No arguments provided[/bold]")
+        
+        console.print()  # Empty line for better readability
     
     try:
-        # Call the tool
-        result = tooluni.run(query)
-        
-        # Format and display the result
         if format == 'json':
-            console.print(json.dumps(result, indent=2))
+            # Redirect stdout during tool execution to suppress debug messages
+            import io
+            original_stdout = sys.stdout
+            temp_stdout = io.StringIO()
+            sys.stdout = temp_stdout
+            
+            # Call the tool with suppressed output
+            result = tooluni.run(query, return_message=False, verbose=False)
+            
+            # Restore original stdout
+            sys.stdout = original_stdout
+            
+            # Create structured JSON response with metadata
+            json_response = {
+                "metadata": {
+                    "tool": tool_name,
+                    "arguments": tool_args
+                },
+                "result": result
+            }
+            
+            # Print JSON output without Rich formatting
+            print(json.dumps(json_response, indent=2))
         else:
+            # Call the tool with return_message=False to avoid debug info in output
+            result = tooluni.run(query, return_message=False, verbose=verbose)
+            
+            # Format and display the result
             console.print(Panel("[bold green]Result:[/bold green]", expand=False))
             
             if isinstance(result, dict):

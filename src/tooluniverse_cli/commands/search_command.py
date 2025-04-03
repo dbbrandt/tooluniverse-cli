@@ -74,9 +74,12 @@ def search_tools(search_string, format='table', full_desc=False,
                 filtered_results.append((name, desc, tool_category))
         search_results = filtered_results
     
-    # Always show search result count
+    # Always calculate search result count
     results_count = len(search_results)
-    console.print(f"[bold]Number of tools found matching '[cyan]{search_string}[/cyan]':[/bold] {results_count}")
+    
+    # Show count only in non-JSON formats
+    if format != 'json':
+        console.print(f"[bold]Number of tools found matching '[cyan]{search_string}[/cyan]':[/bold] {results_count}")
     
     if not search_results:
         console.print("[yellow]No tools found matching the search criteria.[/yellow]")
@@ -116,8 +119,17 @@ def search_tools(search_string, format='table', full_desc=False,
                     "category": tool_category
                 })
         
-        # Print JSON output
-        console.print(json.dumps(tools_json, indent=2))
+        # Create a complete JSON response with metadata
+        json_response = {
+            "metadata": {
+                "query": search_string,
+                "total_results": results_count
+            },
+            "tools": tools_json
+        }
+        
+        # Print JSON output without Rich formatting
+        print(json.dumps(json_response, indent=2))
     
     elif format == 'table':
         # Group search results by category
