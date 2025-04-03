@@ -57,9 +57,10 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
                 filtered_tools.append((name, desc, tool_category))
         all_tools = filtered_tools
     
-    # Show tool count information
+    # Show tool count information (for non-JSON formats)
     tool_count = len(all_tools)
-    console.print(f"[bold]Total tools available:[/bold] {tool_count}")
+    if format != 'json':
+        console.print(f"[bold]Total tools available:[/bold] {tool_count}")
     
     if not all_tools:
         console.print("[yellow]No tools found matching the specified criteria.[/yellow]")
@@ -93,8 +94,17 @@ def list_tools(format='table', full_desc=False, category=None, verbose=False):
                     "category": tool_category
                 })
         
-        # Print JSON output
-        console.print(json.dumps(tools_json, indent=2))
+        # Create a complete JSON response with metadata
+        json_response = {
+            "metadata": {
+                "total_tools": tool_count
+            },
+            "tools": tools_json
+        }
+        
+        # Print JSON output without Rich formatting
+        # Use regular print instead of console.print to avoid escape sequences
+        print(json.dumps(json_response, indent=2))
     
     elif format == 'table':
         # Group tools by category
